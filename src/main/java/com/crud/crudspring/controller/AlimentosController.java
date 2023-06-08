@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.crud.crudspring.model.Alimento;
 import com.crud.crudspring.repository.AlimentosRepository;
+import com.crud.crudspring.service.AlimentoService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -27,19 +28,22 @@ import lombok.AllArgsConstructor;
 @Validated
 @RestController
 @RequestMapping("/api/alimentos")
-@AllArgsConstructor
 public class AlimentosController {
 
-    private AlimentosRepository alimentosRepository;
+    private AlimentoService alimentoService;
+
+    public AlimentosController(AlimentoService alimentoService) {
+        this.alimentoService = alimentoService;
+    }
 
     @GetMapping
     public List<Alimento> list(){
-        return alimentosRepository.findAll();
+        return alimentoService.list();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Alimento> findById(@PathVariable  @NotNull @Positive Long id){
-        return alimentosRepository.findById(id)
+        return alimentoService.findById(id)
         .map(recordFound -> ResponseEntity.ok().body(recordFound))
         .orElse(ResponseEntity.notFound().build());
     }
@@ -47,28 +51,24 @@ public class AlimentosController {
     @PostMapping
     @ResponseStatus(code=HttpStatus.CREATED)
     public Alimento create(@RequestBody @Valid Alimento alimento){
-       return alimentosRepository.save(alimento);
+       return alimentoService.create(alimento);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Alimento> update(@PathVariable @NotNull @Positive Long id, @RequestBody @Valid Alimento alimento){
-        return alimentosRepository.findById(id)
+        return alimentoService.update(id,alimento)
         .map(recordFound -> {
-            recordFound.setName(alimento.getName());
-            recordFound.setCategory(alimento.getCategory());
-            Alimento recordUpdated = alimentosRepository.save(recordFound);
-            return ResponseEntity.ok().body(recordUpdated);
+            return ResponseEntity.ok().body(recordFound);
         })
         .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable  @NotNull @Positive Long id){
-       return alimentosRepository.findById(id)
-       .map(recordFound -> {
-            alimentosRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-       })
-       .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Void> delete(@PathVariable  @NotNull @Positive Long id){
+       if(alimentoService.delete(id)){
+        return ResponseEntity.noContent().<Void>build();
+       }
+      return ResponseEntity.notFound().build();
+    
     }
 }
