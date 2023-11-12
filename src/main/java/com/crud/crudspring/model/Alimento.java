@@ -1,4 +1,4 @@
-package com.crud.crudspring.model;
+/* package com.crud.crudspring.model;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -43,3 +43,4 @@ public class Alimento {
     private String status="Ativo";
 
 }
+ */

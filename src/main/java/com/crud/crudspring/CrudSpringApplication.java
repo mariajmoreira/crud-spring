@@ -4,9 +4,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.crud.crudspring.model.Alimento;
-import com.crud.crudspring.repository.AlimentosRepository;
+//import com.crud.crudspring.model.Alimento;
+//import com.crud.crudspring.repository.AlimentosRepository;
 
 @SpringBootApplication
 public class CrudSpringApplication {
@@ -15,15 +17,25 @@ public class CrudSpringApplication {
 		SpringApplication.run(CrudSpringApplication.class, args);
 	}
 
-	@Bean
+/* 	@Bean
 	CommandLineRunner initDatabase(AlimentosRepository alimentosRepository){
 		return args -> {
 			alimentosRepository.deleteAll();
 
-			Alimento a = new Alimento();
+			Food a = new Alimento();
 			a.setName("Arroz");
 			a.setCategory("Grãos");
 			alimentosRepository.save(a);
+		};
+	} */
+
+		@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/api/foods").allowedOrigins("http://localhost:4200");
+			}
 		};
 	}
 
