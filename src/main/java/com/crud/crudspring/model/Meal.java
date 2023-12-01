@@ -1,4 +1,4 @@
-/* package com.crud.crudspring.model;
+package com.crud.crudspring.model;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -9,38 +9,46 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@SQLDelete(sql="UPDATE Alimento SET status = 'Inativo' WHERE id = ?")
-@Where(clause = "status = 'Ativo'")
-public class Alimento {
+@Table(name="meals")
+@AllArgsConstructor
+@NoArgsConstructor
+public class Meal {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
     @NotNull
-    @Length(min = 5, max=100)
-    @Column(length = 100, nullable = false)
-    private String name;
+    @Column( name="expression",nullable = false)
+    private String expression;
 
     @NotNull
     @Length(max=200)
-    @Pattern(regexp = "Grãos|Fruta")
-    @Column(length = 200, nullable = false)
-    private String category;
+    @Column(name="type",length = 200, nullable = false)
+    private String type;
+
+        
+    @NotNull
+    @Length(max=200)
+    @Column(name="gender",length = 200, nullable = false)
+    private String gender;
 
     @NotNull
     @Length(max=10)
     @Pattern(regexp = "Ativo|Inativo")
-    @Column(length = 10, nullable = false)
+    @Column(name="status",length = 10, nullable = false)
     private String status="Ativo";
 
 }
- */

@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.crud.crudspring.model.Food;
+import com.crud.crudspring.model.InsaFood;
 import com.crud.crudspring.repository.FoodRepository;
+import com.crud.crudspring.repository.InsaFoodRepository;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -22,24 +24,46 @@ public class FoodService {
     
     private final FoodRepository foodRepository;
 
-    public FoodService(FoodRepository foodRepository){
+    private final InsaFoodRepository insafoodRepository;
+
+    public FoodService(FoodRepository foodRepository, InsaFoodRepository insaFoodRepository){
         this.foodRepository = foodRepository;
+        this.insafoodRepository=insaFoodRepository;
+
     }
 
-    public List<Food> list(){
+    public List<InsaFood> insaFoodList(){
+        return insafoodRepository.findAll();
+    }
+
+    public List<Food> foodList(){
         return foodRepository.findAll();
     }
 
-    public Optional<Food> findById(@PathVariable  @NotNull @Positive String id){
+    public Optional<Food> findById(@PathVariable  @NotNull @Positive Long id){
         return foodRepository.findById(id);
        // .map(recordFound -> ResponseEntity.ok().body(recordFound))
         //.orElse(ResponseEntity.notFound().build());
     }
 
    
-/*     public Food create(@RequestBody @Valid Food alimento){
+    public Food create(@RequestBody @Valid Food alimento){
        return foodRepository.save(alimento);
-    } */
+    }
+
+     public void deleteAll(){
+       foodRepository.deleteAll();
+       
+     } 
+
+       public boolean delete(@PathVariable  @NotNull @Positive Long id){
+        return foodRepository.findById(id)
+        .map(recordFound -> {
+             foodRepository.deleteById(id);
+             return true;
+        })
+        .orElse(false);
+     } 
 
 
 /*     public Optional<Food> update(@PathVariable @NotNull @Positive String id, @RequestBody @Valid Food alimento){

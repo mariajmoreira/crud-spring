@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.crud.crudspring.model.Food;
+import com.crud.crudspring.model.InsaFood;
 import com.crud.crudspring.repository.FoodRepository;
 import com.crud.crudspring.service.FoodService;
 
+import io.micrometer.core.ipc.http.HttpSender.Response;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -28,7 +30,7 @@ import lombok.AllArgsConstructor;
 
 @Validated
 @RestController
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/foods")
 public class FoodController {
 
@@ -38,16 +40,71 @@ public class FoodController {
         this.foodService = foodService;
     }
 
-    @GetMapping
-    public List<Food> list(){
-        return foodService.list();
+
+     @GetMapping("/insa")
+    public List<InsaFood> getInsaFoodList(){
+        System.out.println("getting insa foods");
+        List<InsaFood> insa_tca = foodService.insaFoodList();
+
+
+        return insa_tca;
     }
 
+     @GetMapping
+        public List<Food> getFoodList(){
+        System.out.println("getting insa foods");
+        List<Food> foods = foodService.foodList();
+
+
+        return foods;
+    }
+
+
+     @GetMapping("/transfer")
+    public List<Food> transferInsaFoodList(){
+        System.out.println("getting insa foods");
+        List<InsaFood> insa_tca = foodService.insaFoodList();
+        System.out.println("insa_tca: " + insa_tca);
+        for(InsaFood insa : insa_tca){
+            Food f = new Food(insa) ;
+            System.out.println("food: " + f);
+            foodService.create(f);
+        }
+
+        List<Food> food = foodService.foodList();
+
+        return food;
+    }
+
+
     @GetMapping("/{id}")
-    public ResponseEntity<Food> findById(@PathVariable  @NotNull @Positive String id){
+    public ResponseEntity<Food> findById(@PathVariable  @NotNull @Positive Long id){
         return foodService.findById(id)
         .map(recordFound -> ResponseEntity.ok().body(recordFound))
         .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/deleteAll")
+    public ResponseEntity<Void> deleteAll(){
+        this.foodService.deleteAll();
+        return  ResponseEntity.noContent().<Void>build();
+       
+    }
+
+    @DeleteMapping("/deleteAllById")
+    public ResponseEntity<Void> deleteAllById(){
+        List<Food> food = foodService.foodList();
+        for(Food f : food){
+        
+            Long id = f.getId();
+            if ( this.foodService.delete(id)) {
+                return ResponseEntity.noContent().<Void>build();
+            }
+           
+             return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.badRequest().build();
+       
     }
 /* 
     @PostMapping

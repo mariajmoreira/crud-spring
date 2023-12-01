@@ -8,7 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.crud.crudspring.model.Food;
+import com.crud.crudspring.model.InsaFood;
 
 @Repository
-public interface FoodRepository extends JpaRepository<Food,Long> {
+public interface InsaFoodRepository extends JpaRepository<InsaFood,String> {
 }
